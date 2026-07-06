@@ -7,8 +7,6 @@ const routeLabels: Record<string, string> = {
   '/servicios': 'Servicios',
   '/cotizar': 'Cotizar',
   '/agendar': 'Agendar Cita',
-  '/products': 'Productos',
-  '/contacto': 'Contacto',
 };
 
 export const Breadcrumbs = () => {
@@ -39,7 +37,7 @@ export const Breadcrumbs = () => {
               {index === breadcrumbs.length - 1 ? (
                 <span className="font-medium text-gray-900">{crumb.label}</span>
               ) : (
-                <Link to={crumb.path} className="hover:text-purple-600 transition-colors">
+                <Link to={crumb.path} className="hover:text-brand-600 transition-colors">
                   {crumb.label}
                 </Link>
               )}

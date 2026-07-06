@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function Servicios() {
   return (
-    <div className="bg-gray-50">
+    <div className="bg-white">
       <Breadcrumbs />
 
       <div className="bg-gradient-to-br from-zinc-900 to-black text-white py-20">
@@ -11,7 +11,7 @@ export default function Servicios() {
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">
             Nuestros Servicios
           </h1>
-          <p className="text-xl text-purple-300 max-w-2xl mx-auto">
+          <p className="text-xl max-w-2xl mx-auto" style={{ color: "#26b06b" }}>
             Reparación de carrocería, repintado general y restauración de autos clásicos. 
             Calidad y durabilidad en cada trabajo.
           </p>
@@ -21,7 +21,7 @@ export default function Servicios() {
       <div className="max-w-6xl mx-auto px-6 py-20">
         
         <div className="mb-20">
-          <h2 className="text-4xl font-bold text-gray-900 mb-8">
+          <h2 className="text-4xl font-bold mb-8" style={{ color: "#231F20" }}>
             Reparación de Carrocería
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -33,15 +33,15 @@ export default function Servicios() {
               "Eliminación de óxido y corrosión",
               "Preparación de superficies para pintura"
             ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all">
-                <p className="text-gray-700 font-medium">{item}</p>
+              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all border border-gray-100">
+                <p className="font-medium" style={{ color: "#231F20" }}>{item}</p>
               </div>
             ))}
           </div>
         </div>
 
         <div className="mb-20">
-          <h2 className="text-4xl font-bold text-gray-900 mb-8">
+          <h2 className="text-4xl font-bold mb-8" style={{ color: "#231F20" }}>
             Repintado General
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -53,15 +53,15 @@ export default function Servicios() {
               "Trabajos de detallado y pulido",
               "Protección cerámica y selladores"
             ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all">
-                <p className="text-gray-700 font-medium">{item}</p>
+              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all border border-gray-100">
+                <p className="font-medium" style={{ color: "#231F20" }}>{item}</p>
               </div>
             ))}
           </div>
         </div>
 
         <div className="mb-20">
-          <h2 className="text-4xl font-bold text-gray-900 mb-8">
+          <h2 className="text-4xl font-bold mb-8" style={{ color: "#231F20" }}>
             Restauración de Autos Clásicos
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -73,15 +73,15 @@ export default function Servicios() {
               "Trabajo detallado en interiores y exteriores",
               "Preservación de autenticidad y valor histórico"
             ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all border border-purple-100 hover:border-purple-300">
-                <p className="text-gray-700 font-medium">{item}</p>
+              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all border border-brand-100 hover:border-brand-300">
+                <p className="font-medium" style={{ color: "#231F20" }}>{item}</p>
               </div>
             ))}
           </div>
         </div>
 
         <div>
-          <h2 className="text-4xl font-bold text-gray-900 mb-8">
+          <h2 className="text-4xl font-bold mb-8" style={{ color: "#231F20" }}>
             Servicios Adicionales
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -93,8 +93,8 @@ export default function Servicios() {
               "Personalización de color a elección",
               "Asesoría en mantenimiento de pintura"
             ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all">
-                <p className="text-gray-700 font-medium">{item}</p>
+              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all border border-gray-100">
+                <p className="font-medium" style={{ color: "#231F20" }}>{item}</p>
               </div>
             ))}
           </div>
@@ -102,7 +102,7 @@ export default function Servicios() {
 
       </div>
 
-      <div className="bg-zinc-900 py-16 text-center">
+      <div className="py-16 text-center" style={{ backgroundColor: "#231F20" }}>
         <h2 className="text-4xl font-bold text-white mb-6">
           ¿Necesitas nuestros servicios?
         </h2>
@@ -112,13 +112,13 @@ export default function Servicios() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             to="/cotizar"
-            className="inline-block px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-semibold text-white hover:scale-105 transition-all"
+            className="inline-block px-10 py-4 bg-gradient-to-r from-brand-600 to-brand-500 rounded-xl font-semibold text-white hover:scale-105 transition-all"
           >
             Cotizar Ahora
           </Link>
           <Link
             to="/agendar"
-            className="inline-block px-10 py-4 border-2 border-white text-white rounded-xl font-semibold hover:bg-white hover:text-black transition-all"
+            className="inline-block px-10 py-4 border-2 border-white text-white rounded-xl font-semibold hover:bg-white hover:text-zinc-900 transition-all"
           >
             Agendar Cita
           </Link>
