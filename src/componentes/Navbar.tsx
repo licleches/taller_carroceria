@@ -12,7 +12,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <img
-              src="/public/images/logodj.png"
+              src="/images/logodj.png"
               alt="Desert Jewel Bodyshop"
               className="h-10 w-auto hidden sm:block"
             />
