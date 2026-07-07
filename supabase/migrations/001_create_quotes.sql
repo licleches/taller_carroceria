@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS public.quotes (
   respuesta_precio text NULL,
   respuesta_tiempo text NULL,
   respuesta_notas text NULL,
+  respuesta_pdf_url text NULL,
   responded_at timestamp with time zone NULL,
   CONSTRAINT quotes_pkey PRIMARY KEY (id),
   CONSTRAINT quotes_contacto_check CHECK (
@@ -54,6 +55,12 @@ CREATE POLICY "auth_update_quotes"
   TO authenticated
   USING (true)
   WITH CHECK (true);
+
+-- ============================================================
+-- COLUMNA ADICIONAL (si ya tienes la tabla sin respuesta_pdf_url)
+-- ============================================================
+-- Si ya creaste la tabla antes, ejecuta esto por separado:
+-- ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS respuesta_pdf_url text NULL;
 
 -- ============================================================
 -- NOTAS:

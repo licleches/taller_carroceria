@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { ArrowLeft, Download, LogOut, Image } from "lucide-react";
+import { ArrowLeft, Download, LogOut, Image, FileText, Upload } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import Toast from "../../componentes/Toast";
@@ -24,6 +24,7 @@ interface Quote {
   respuesta_precio: string | null;
   respuesta_tiempo: string | null;
   respuesta_notas: string | null;
+  respuesta_pdf_url: string | null;
   responded_at: string | null;
 }
 
@@ -36,15 +37,18 @@ const STATUS_OPTIONS = [
 
 export default function QuoteDetail() {
   const { id } = useParams();
-  const [quote, setQuote]     = useState<Quote | null>(null);
-  const [precio, setPrecio]   = useState("");
-  const [tiempo, setTiempo]   = useState("");
-  const [notas, setNotas]     = useState("");
-  const [status, setStatus]   = useState("pendiente");
-  const [saving, setSaving]   = useState(false);
-  const [toast, setToast]     = useState<{ message: string; type: "success" | "error" } | null>(null);
-  const [fotos, setFotos]     = useState<string[]>([]);
+  const [quote, setQuote]       = useState<Quote | null>(null);
+  const [precio, setPrecio]     = useState("");
+  const [tiempo, setTiempo]     = useState("");
+  const [notas, setNotas]       = useState("");
+  const [status, setStatus]     = useState("pendiente");
+  const [saving, setSaving]     = useState(false);
+  const [toast, setToast]       = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [fotos, setFotos]       = useState<string[]>([]);
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [pdfUrl, setPdfUrl]     = useState<string | null>(null);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -59,20 +63,63 @@ export default function QuoteDetail() {
       setNotas(data.respuesta_notas ?? "");
       setStatus(data.status ?? "pendiente");
       setFotos(data.foto_url ? data.foto_url.split(",").filter(Boolean) : []);
+      setPdfUrl(data.respuesta_pdf_url ?? null);
     }
+  };
+
+  const ALLOWED_FILE_TYPES = ["application/pdf", "text/csv", "application/vnd.ms-excel"];
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !ALLOWED_FILE_TYPES.includes(file.type)) {
+      setToast({ message: "Solo se permiten archivos PDF o CSV.", type: "error" });
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setToast({ message: "El archivo no debe superar los 10 MB.", type: "error" });
+      return;
+    }
+
+    setUploadingPdf(true);
+    const ext = file.name.split(".").pop() || "pdf";
+    const fileName = `respuestas/${id}-${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("evidencias")
+      .upload(fileName, file);
+
+    if (uploadError) {
+      console.error("Error subiendo PDF:", uploadError);
+      setToast({ message: "Error al subir el PDF. Intenta de nuevo.", type: "error" });
+      setUploadingPdf(false);
+      return;
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from("evidencias")
+      .getPublicUrl(fileName);
+
+    if (publicUrlData?.publicUrl) {
+      setPdfUrl(publicUrlData.publicUrl);
+      setToast({ message: "PDF subido correctamente.", type: "success" });
+    }
+    setUploadingPdf(false);
+    if (e.target) e.target.value = "";
   };
 
   const handleSave = async () => {
     setSaving(true);
+    const updates: Record<string, unknown> = {
+      respuesta_precio: precio || null,
+      respuesta_tiempo: tiempo || null,
+      respuesta_notas:  notas  || null,
+      status,
+    };
+    if (pdfUrl) updates.respuesta_pdf_url = pdfUrl;
+    if (status === "respondida") updates.responded_at = new Date().toISOString();
+
     const { error } = await supabase
       .from("quotes")
-      .update({
-        respuesta_precio: precio || null,
-        respuesta_tiempo: tiempo || null,
-        respuesta_notas:  notas  || null,
-        status,
-        ...(status === "respondida" ? { responded_at: new Date().toISOString() } : {}),
-      })
+      .update(updates)
       .eq("id", id);
 
     setSaving(false);
@@ -116,7 +163,7 @@ export default function QuoteDetail() {
       headStyles: { fillColor: [0, 104, 55] },
       columnStyles: { 0: { cellWidth: 40 }, 1: { cellWidth: 120 } },
     });
-    const y = (doc as any).lastAutoTable.finalY + 10;
+    let y = (doc as any).lastAutoTable.finalY + 10;
     doc.setFontSize(12);
     doc.setTextColor(35, 31, 32);
     doc.text("Respuesta del Taller", 14, y);
@@ -132,12 +179,20 @@ export default function QuoteDetail() {
       headStyles: { fillColor: [0, 104, 55] },
       columnStyles: { 0: { cellWidth: 40 }, 1: { cellWidth: 120 } },
     });
+    y = (doc as any).lastAutoTable.finalY + 10;
+
+    if (quote.respuesta_pdf_url) {
+      doc.setFontSize(10);
+      doc.setTextColor(0, 104, 55);
+      doc.text("Se adjuntó un archivo PDF adicional con el detalle de la cotización.", 14, y);
+    }
+
     doc.save(`cotizacion-${quote.nombre.replace(/\s+/g, "_")}.pdf`);
   };
 
   const handleLogout = async () => { await logout(); navigate("/admin/login"); };
 
-  const savedStatus   = STATUS_OPTIONS.find((s) => s.value === quote?.status) ?? STATUS_OPTIONS[0];
+  const savedStatus = STATUS_OPTIONS.find((s) => s.value === quote?.status) ?? STATUS_OPTIONS[0];
 
   if (!quote) {
     return (
@@ -163,7 +218,7 @@ export default function QuoteDetail() {
 
       <header className="bg-zinc-900 text-white px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link to="/admin/dashboard" className="text-gray-300 hover:text-white transition-colors">
+          <Link to="/admin/quotes" className="text-gray-300 hover:text-white transition-colors">
             <ArrowLeft size={20} />
           </Link>
           <h1 className="text-lg font-bold">Cotización #{quote.id.slice(0, 8)}</h1>
@@ -235,7 +290,7 @@ export default function QuoteDetail() {
         {/* ── Responder / editar ── */}
         <div className="bg-white rounded-2xl shadow p-8">
           <h2 className="text-2xl font-bold mb-6" style={{ color: "#231F20" }}>
-            {quote.respuesta_precio || quote.respuesta_tiempo || quote.respuesta_notas
+            {quote.respuesta_precio || quote.respuesta_tiempo || quote.respuesta_notas || quote.respuesta_pdf_url
               ? "Editar Respuesta"
               : "Responder Cotización"}
           </h2>
@@ -294,6 +349,42 @@ export default function QuoteDetail() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:border-brand-500"
                 placeholder="Incluye cualquier detalle relevante..."
               />
+            </div>
+
+            {/* ── Subir PDF/CSV ── */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Adjuntar archivo (PDF o CSV con cotización desde Excel)
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  ref={pdfInputRef}
+                  type="file"
+                  accept=".pdf,.csv,application/pdf,text/csv,application/vnd.ms-excel"
+                  onChange={handlePdfUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => pdfInputRef.current?.click()}
+                  disabled={uploadingPdf}
+                  className="px-5 py-3 border-2 border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:border-brand-500 hover:text-brand-600 transition-all flex items-center gap-2 disabled:opacity-50"
+                >
+                  <Upload size={16} />
+                  {uploadingPdf ? "Subiendo..." : "Seleccionar archivo"}
+                </button>
+                {pdfUrl && (
+                  <a
+                    href={pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-3 bg-green-50 text-brand-700 rounded-xl text-sm font-medium hover:bg-green-100 transition-all flex items-center gap-2 border border-green-200"
+                  >
+                    <FileText size={16} /> Ver archivo adjunto
+                  </a>
+                )}
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Máximo 10 MB · PDF o CSV</p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-2">

@@ -105,7 +105,7 @@ export default function Nosotros() {
             <h3 className="text-2xl font-semibold mb-4" style={{ color: "#231F20" }}>Ubicación</h3>
             <p className="text-gray-600 mb-6">
               Cjon Zaragoza y 27, Colonia Burócrata<br />
-              Hermosillo, Sonora, México
+              San Luis Rio Colorado, Sonora, México
             </p>
             <p className="text-gray-600 mb-6">
               Horario:<br />
@@ -126,10 +126,16 @@ export default function Nosotros() {
             </a>
           </div>
 
-          <div className="bg-gray-200 rounded-2xl h-80 flex items-center justify-center border">
-            <p className="text-gray-500 text-center">
-              Aquí irá el mapa de Google Maps
-            </p>
+          <div className="rounded-2xl overflow-hidden h-80 border border-gray-200 shadow">
+<iframe
+  title="Ubicación Desert Jewel Bodyshop"
+  src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d864.2065037878114!2d-114.75039699947357!3d32.467472164392!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2smx!4v1783458931329!5m2!1ses-419!2smx"
+  width="100%"
+  height="100%"
+  style={{ border: 0 }}
+  allowFullScreen
+  loading="lazy"
+/>
           </div>
         </div>
       </div>

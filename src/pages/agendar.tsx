@@ -2,6 +2,31 @@ import { Breadcrumbs } from "../componentes/Breadcrumb";
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 
+const LIMITS = { nombre: 50, telefono: 12, email: 100, placas: 8, notas: 250 };
+
+const servicios = [
+  "Reparacion de abolladuras y golpes menores",
+  "Reparacion de defensas plasticas",
+  "Eliminacion de oxido y reemplazo de lamina",
+  "Reparacion de desprendimiento de pintura",
+  "Reparacion de parrilla u otros elementos plasticos",
+  "Repintado completo de vehiculos",
+  "Repintado de paneles individuales",
+  "Aplicacion de pintura matte, perlada y tricapa",
+  "Cambio de color completo",
+  "Restauracion de faros",
+  "Aplicacion de texturizado en caja de Pickup",
+  "Repintado de plasticos interiores",
+  "Aplicacion de proteccion ceramica y selladores",
+  "Trabajo de detallado y pulido de pintura",
+  "Otro",
+];
+
+const horariosDisponibles = [
+  "10:00", "11:00", "12:00",
+  "13:00", "14:00", "15:00", "16:00", "17:00",
+];
+
 export default function Agendar() {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -18,25 +43,23 @@ export default function Agendar() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
 
-  const servicios = [
-    { nombre: "Reparación de Carrocería", duracion: "Variable" },
-    { nombre: "Repintado General", duracion: "Variable" },
-    { nombre: "Restauración de Clásicos", duracion: "Variable" },
-    { nombre: "Trabajos de Hojalatería", duracion: "2 horas" },
-    { nombre: "Pulido y Detallado", duracion: "1.5 horas" },
-    { nombre: "Evaluación y Diagnóstico", duracion: "1 hora" },
-    { nombre: "Otro", duracion: "Variable" },
-  ];
-
-  const horariosDisponibles = [
-    "10:00", "11:00", "12:00",
-    "13:00", "14:00", "15:00", "16:00", "17:00",
-  ];
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "telefono") {
+      const digitsOnly = value.replace(/\D/g, "").slice(0, LIMITS.telefono);
+      setFormData((prev) => ({ ...prev, telefono: digitsOnly }));
+      return;
+    }
+
+    if (name === "nombre" && value.length > LIMITS.nombre) return;
+    if (name === "email" && value.length > LIMITS.email) return;
+    if (name === "placas" && value.length > LIMITS.placas) return;
+    if (name === "notas" && value.length > LIMITS.notas) return;
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,7 +81,7 @@ export default function Agendar() {
     setSending(false);
 
     if (insertError) {
-      console.error("Error al agendar cita:", JSON.stringify(insertError));
+      console.error("Error al agendar cita:", insertError);
       setError("Ocurrió un error al agendar tu cita. Intenta de nuevo.");
       return;
     }
@@ -120,6 +143,7 @@ export default function Agendar() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-brand-500"
                   placeholder="Juan Pérez"
                 />
+                <p className="text-xs text-gray-400 mt-1 text-right">{formData.nombre.length}/{LIMITS.nombre}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -132,8 +156,9 @@ export default function Agendar() {
                   value={formData.telefono}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-brand-500"
-                  placeholder="644 123 4567"
+                  placeholder="6441234567"
                 />
+                <p className="text-xs text-gray-400 mt-1 text-right">{formData.telefono.length}/{LIMITS.telefono}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -147,6 +172,7 @@ export default function Agendar() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-brand-500"
                   placeholder="ejemplo@correo.com"
                 />
+                <p className="text-xs text-gray-400 mt-1 text-right">{formData.email.length}/{LIMITS.email}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -160,6 +186,7 @@ export default function Agendar() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-brand-500"
                   placeholder="ABC-1234"
                 />
+                <p className="text-xs text-gray-400 mt-1 text-right">{formData.placas.length}/{LIMITS.placas}</p>
               </div>
             </div>
 
@@ -175,8 +202,8 @@ export default function Agendar() {
             >
               <option value="">Selecciona un servicio...</option>
               {servicios.map((s, i) => (
-                <option key={i} value={s.nombre}>
-                  {s.nombre} — {s.duracion}
+                <option key={i} value={s}>
+                  {s}
                 </option>
               ))}
             </select>
@@ -229,6 +256,7 @@ export default function Agendar() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:border-brand-500"
                 placeholder="Ej: El golpe está en la puerta del conductor..."
               />
+              <p className="text-xs text-gray-400 mt-1 text-right">{formData.notas.length}/{LIMITS.notas}</p>
             </div>
 
             <div

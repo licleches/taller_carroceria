@@ -1,6 +1,38 @@
 import { Breadcrumbs } from "../componentes/Breadcrumb";
 import { Link } from "react-router-dom";
 
+const CATEGORIES = [
+  {
+    title: "Reparación de Carrocería",
+    items: [
+      "Reparacion de abolladuras y golpes menores",
+      "Reparacion de defensas plasticas",
+      "Eliminacion de oxido y reemplazo de lamina",
+      "Reparacion de desprendimiento de pintura",
+      "Reparacion de parrilla u otros elementos plasticos",
+    ],
+  },
+  {
+    title: "Repintado General",
+    items: [
+      "Repintado completo de vehiculos",
+      "Repintado de paneles individuales",
+      "Aplicacion de pintura matte, perlada y tricapa",
+      "Cambio de color completo",
+    ],
+  },
+  {
+    title: "Servicios Adicionales",
+    items: [
+      "Restauracion de faros",
+      "Aplicacion de texturizado en caja de Pickup",
+      "Repintado de plasticos interiores",
+      "Aplicacion de proteccion ceramica y selladores",
+      "Trabajo de detallado y pulido de pintura",
+    ],
+  },
+];
+
 export default function Servicios() {
   return (
     <div className="bg-white">
@@ -12,94 +44,30 @@ export default function Servicios() {
             Nuestros Servicios
           </h1>
           <p className="text-xl max-w-2xl mx-auto" style={{ color: "#26b06b" }}>
-            Reparación de carrocería, repintado general y restauración de autos clásicos. 
+            Reparación de carrocería, repintado general y servicios especializados.
             Calidad y durabilidad en cada trabajo.
           </p>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-20">
-        
-        <div className="mb-20">
-          <h2 className="text-4xl font-bold mb-8" style={{ color: "#231F20" }}>
-            Reparación de Carrocería
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              "Reparación de abolladuras y golpes",
-              "Alineación y enderezado de paneles",
-              "Reparación de defensas y fascias",
-              "Soldadura de lámina y fibra de vidrio",
-              "Eliminación de óxido y corrosión",
-              "Preparación de superficies para pintura"
-            ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all border border-gray-100">
-                <p className="font-medium" style={{ color: "#231F20" }}>{item}</p>
-              </div>
-            ))}
+        {CATEGORIES.map((cat, ci) => (
+          <div key={ci} className={ci < CATEGORIES.length - 1 ? "mb-20" : ""}>
+            <h2 className="text-4xl font-bold mb-8" style={{ color: "#231F20" }}>
+              {cat.title}
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {cat.items.map((item, i) => (
+                <div
+                  key={i}
+                  className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all border border-gray-100"
+                >
+                  <p className="font-medium" style={{ color: "#231F20" }}>{item}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-
-        <div className="mb-20">
-          <h2 className="text-4xl font-bold mb-8" style={{ color: "#231F20" }}>
-            Repintado General
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              "Repintado completo de vehículos",
-              "Pintura de paneles individuales",
-              "Aplicación de pintura de alto rendimiento",
-              "Acabados mate, brillante y perlado",
-              "Trabajos de detallado y pulido",
-              "Protección cerámica y selladores"
-            ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all border border-gray-100">
-                <p className="font-medium" style={{ color: "#231F20" }}>{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-20">
-          <h2 className="text-4xl font-bold mb-8" style={{ color: "#231F20" }}>
-            Restauración de Autos Clásicos
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              "Restauraciones completas de autos antiguos",
-              "Rescate de vehículos con valor sentimental",
-              "Reemplazo de paneles y secciones completas",
-              "Pintura color original y acabados de época",
-              "Trabajo detallado en interiores y exteriores",
-              "Preservación de autenticidad y valor histórico"
-            ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all border border-brand-100 hover:border-brand-300">
-                <p className="font-medium" style={{ color: "#231F20" }}>{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-4xl font-bold mb-8" style={{ color: "#231F20" }}>
-            Servicios Adicionales
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              "Diagnóstico y evaluación de daños",
-              "Trabajos menores de hojalatería",
-              "Aplicación de anticorrosivos",
-              "Pulido y detallado profesional",
-              "Personalización de color a elección",
-              "Asesoría en mantenimiento de pintura"
-            ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow hover:shadow-md transition-all border border-gray-100">
-                <p className="font-medium" style={{ color: "#231F20" }}>{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
+        ))}
       </div>
 
       <div className="py-16 text-center" style={{ backgroundColor: "#231F20" }}>

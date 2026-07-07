@@ -55,6 +55,24 @@ const AÑOS = Array.from({ length: currentYear - 1979 }, (_, i) => currentYear +
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 const MAX_FILES = 5;
 
+const SERVICIOS = [
+  "Reparacion de abolladuras y golpes menores",
+  "Reparacion de defensas plasticas",
+  "Eliminacion de oxido y reemplazo de lamina",
+  "Reparacion de desprendimiento de pintura",
+  "Reparacion de parrilla u otros elementos plasticos",
+  "Repintado completo de vehiculos",
+  "Repintado de paneles individuales",
+  "Aplicacion de pintura matte, perlada y tricapa",
+  "Cambio de color completo",
+  "Restauracion de faros",
+  "Aplicacion de texturizado en caja de Pickup",
+  "Repintado de plasticos interiores",
+  "Aplicacion de proteccion ceramica y selladores",
+  "Trabajo de detallado y pulido de pintura",
+  "Otro",
+];
+
 export default function Cotizar() {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -363,13 +381,10 @@ export default function Cotizar() {
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-brand-500"
               >
-                <option value="">Selecciona una opción</option>
-                <option value="Carrocería">Reparación de Carrocería</option>
-                <option value="Repintado">Repintado General</option>
-                <option value="Restauración">Restauración de Clásicos</option>
-                <option value="Hojalatería">Trabajos de Hojalatería</option>
-                <option value="Detallado">Pulido y Detallado</option>
-                <option value="Otro">Otro</option>
+                <option value="">Selecciona un servicio</option>
+                {SERVICIOS.map((s, i) => (
+                  <option key={i} value={s}>{s}</option>
+                ))}
               </select>
             </div>
 
