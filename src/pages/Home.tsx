@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Wrench, Paintbrush, Sparkles, Shield, Clock, Star } from "lucide-react";
+import { Wrench, Paintbrush, Shield, Clock, Star } from "lucide-react";
 
 export default function Home() {
   return (
