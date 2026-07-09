@@ -1,52 +1,132 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Wrench, Paintbrush, Shield, Clock, Star } from "lucide-react";
+import { Wrench, Paintbrush, Shield, Clock, Star, ChevronLeft, ChevronRight } from "lucide-react";
+
+const carouselImages = [
+  "/images/faros.webp",
+  "/images/faros2.webp",
+  "/images/faros3.webp",
+  "/images/faros4.webp",
+  "/images/carro1.jpeg",
+  "/images/carro3.png",
+];
+
+const workVideos = [
+  "/images/video1.mp4",
+  "/images/video2.mp4",
+  "/images/video3.mp4",
+  "/images/video4.mp4",
+  "/images/video5.mp4",
+  "/images/video6.mp4",
+  "/images/video7.mp4",
+  "/images/video8.mp4",
+  "/images/video9.mp4",
+];
 
 export default function Home() {
+  const [current, setCurrent] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(() => {
+      setCurrent((c) => (c + 1) % carouselImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [isPaused]);
+
   return (
     <div className="bg-white">
 
       {/* ════════════════════════════════════════ */}
-      {/* HERO */}
+      {/* HERO CAROUSEL */}
       {/* ════════════════════════════════════════ */}
-      <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(at_50%_50%,#006837_0%,transparent_70%)] opacity-25"></div>
-        <div className="absolute top-20 left-10 w-72 h-72 border border-white/5 rounded-full"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 border border-white/5 rounded-full"></div>
+      <div
+        className="relative h-screen overflow-hidden bg-black"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <div
+          className="flex h-full transition-transform duration-1000 ease-in-out"
+          style={{ transform: `translateX(-${current * 100}%)` }}
+        >
+          {carouselImages.map((src, i) => (
+            <div key={i} className="min-w-full h-full relative flex-shrink-0">
+              <img
+                src={src}
+                alt={`Trabajo ${i + 1}`}
+                className="w-full h-full object-cover"
+                loading={i === 0 ? "eager" : "lazy"}
+              />
+            </div>
+          ))}
+        </div>
 
-        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            Desert Jewel<span className="text-brand-400"> Bodyshop</span>
-          </h1>
-
-          <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Reparación de carrocería, repintado general y servicios especializados.
-            <span className="block text-brand-400 font-semibold mt-2">La calidad es nuestro principal compromiso.</span>
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-5 justify-center">
-            <Link
-              to="/cotizar"
-              className="group px-10 py-5 bg-gradient-to-r from-brand-600 to-brand-500 rounded-2xl font-semibold text-lg text-white hover:scale-105 transition-all duration-300 shadow-2xl shadow-brand-600/40 flex items-center gap-3"
-            >
-              <Wrench size={20} />
-              Cotizar Ahora
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </Link>
-            <Link
-              to="/agendar"
-              className="px-10 py-5 border-2 border-white/30 text-white rounded-2xl font-semibold text-lg hover:bg-white hover:text-zinc-900 hover:border-white transition-all duration-300 flex items-center gap-3"
-            >
-              <Clock size={20} />
-              Agendar Cita
-            </Link>
+        <div className="absolute inset-0 flex items-center">
+          <div className="relative z-10 text-left px-6 md:pl-32 md:pr-16 max-w-4xl">
+            <div className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-6 border"
+                 style={{ color: "#26b06b", borderColor: "rgba(38,176,107,0.3)", backgroundColor: "rgba(38,176,107,0.08)" }}>
+              Taller de Carrocería y Pintura
+            </div>
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 leading-tight">
+              Desert Jewel<span className="block text-4xl md:text-5xl font-light mt-2" style={{ color: "#26b06b" }}>Bodyshop</span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl leading-relaxed">
+              Reparación de carrocería, repintado general y servicios especializados.
+              <span className="block font-semibold mt-1" style={{ color: "#26b06b" }}>La calidad es nuestro principal compromiso.</span>
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link
+                to="/cotizar"
+                className="group px-8 py-4 bg-gradient-to-r from-brand-600 to-brand-500 rounded-2xl font-semibold text-white hover:scale-105 transition-all duration-300 shadow-2xl shadow-brand-600/40 flex items-center gap-3"
+              >
+                <Wrench size={18} />
+                Cotizar Ahora
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </Link>
+              <Link
+                to="/agendar"
+                className="px-8 py-4 border-2 border-white/30 text-white rounded-2xl font-semibold hover:bg-white hover:text-zinc-900 hover:border-white transition-all duration-300 flex items-center gap-3"
+              >
+                <Clock size={18} />
+                Agendar Cita
+              </Link>
+            </div>
           </div>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/40 animate-bounce">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
+        <button
+          onClick={() => setCurrent((c) => (c - 1 + carouselImages.length) % carouselImages.length)}
+          className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/25 transition-all opacity-60 hover:opacity-100 z-30"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <button
+          onClick={() => setCurrent((c) => (c + 1) % carouselImages.length)}
+          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/25 transition-all opacity-60 hover:opacity-100 z-30"
+        >
+          <ChevronRight size={20} />
+        </button>
+
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-20">
+          {carouselImages.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`h-1.5 rounded-full transition-all duration-500 ${
+                i === current ? "w-10" : "w-1.5 bg-white/40 hover:bg-white/70"
+              }`}
+              style={i === current ? { backgroundColor: "#26b06b", width: "2.5rem" } : {}}
+              aria-label={`Ir a imagen ${i + 1}`}
+            />
+          ))}
+        </div>
+
+        <div className="absolute bottom-8 right-8 z-20 text-white/40 text-xs font-mono tracking-wider">
+          {String(current + 1).padStart(2, "0")} / {String(carouselImages.length).padStart(2, "0")}
         </div>
       </div>
 
@@ -62,7 +142,63 @@ export default function Home() {
           Nos enfocamos principalmente en la calidad de los trabajos, más que en la rapidez.
           Nuestro objetivo es entregar trabajos duraderos con una excelente terminación.
         </p>
+      </div>
 
+      {/* ════════════════════════════════════════ */}
+      {/* TRABAJOS */}
+      {/* ════════════════════════════════════════ */}
+      <div className="py-28 bg-zinc-900">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <div className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-4 border"
+                 style={{ color: "#26b06b", borderColor: "rgba(38,176,107,0.3)", backgroundColor: "rgba(38,176,107,0.08)" }}>
+              Portafolio
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+              Nuestros Trabajos
+            </h2>
+            <p className="text-zinc-400 max-w-2xl mx-auto">
+              Mira algunos de los trabajos que hemos realizado. Cada proyecto es tratado con el máximo cuidado y atención al detalle.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-10 md:gap-16">
+            {workVideos.map((src, i) => (
+              <div
+                key={i}
+                className={`flex flex-col md:flex-row items-center gap-6 md:gap-12 ${
+                  i % 2 === 1 ? "md:flex-row-reverse" : ""
+                }`}
+              >
+                <div className="w-full md:w-5/12 lg:w-1/3 max-w-md">
+                  <div className="group relative rounded-2xl overflow-hidden border border-zinc-700/50 bg-zinc-800/40 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+                    <div className="p-2">
+                      <div className="rounded-lg overflow-hidden bg-black">
+                        <video
+                          src={src}
+                          muted
+                          loop
+                          autoPlay
+                          playsInline
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/5 pointer-events-none" />
+                  </div>
+                </div>
+                <div className="hidden md:flex flex-1 items-center">
+                  <div className="flex items-center gap-4">
+                    <div className="h-px w-12 bg-brand-500/30" />
+                    <span className="text-xs font-mono tracking-widest text-zinc-600">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* ════════════════════════════════════════ */}
