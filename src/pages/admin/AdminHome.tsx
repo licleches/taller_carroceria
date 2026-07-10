@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
-import { LogOut, Calendar, FileText, Clock, Users } from "lucide-react";
+import { LogOut, Calendar, FileText, Clock, Users, Activity } from "lucide-react";
 
 interface TodayAppointment {
   id: string;
@@ -118,6 +118,9 @@ export default function AdminHome() {
           </Link>
           <Link to="/admin/calendar" className="text-gray-300 hover:text-white transition-colors text-sm font-medium flex items-center gap-1">
             <Calendar size={15} /> Calendario
+          </Link>
+          <Link to="/admin/logs" className="text-gray-300 hover:text-white transition-colors text-sm font-medium flex items-center gap-1">
+            <Activity size={15} /> Logs
           </Link>
           <button onClick={handleLogout} className="text-gray-300 hover:text-white transition-colors flex items-center gap-1 text-sm">
             <LogOut size={15} /> Salir

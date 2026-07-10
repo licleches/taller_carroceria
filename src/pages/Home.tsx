@@ -8,19 +8,18 @@ const carouselImages = [
   "/images/faros3.webp",
   "/images/faros4.webp",
   "/images/carro1.jpeg",
-  "/images/carro3.png",
+  "/images/carro 1.2.jpeg",
+  "/images/carro 2.jpeg",
+  "/images/carro 2.2.jpeg",
 ];
 
 const workVideos = [
-  "/images/video1.mp4",
-  "/images/video2.mp4",
-  "/images/video3.mp4",
-  "/images/video4.mp4",
-  "/images/video5.mp4",
-  "/images/video6.mp4",
-  "/images/video7.mp4",
-  "/images/video8.mp4",
-  "/images/video9.mp4",
+  "/images/video1.webm",
+  "/images/video2.webm",
+  "/images/video3.webm",
+  "/images/video4.webm",
+  "/images/video5.webm",
+  "/images/video6.webm",
 ];
 
 export default function Home() {
@@ -38,9 +37,7 @@ export default function Home() {
   return (
     <div className="bg-white">
 
-      {/* ════════════════════════════════════════ */}
       {/* HERO CAROUSEL */}
-      {/* ════════════════════════════════════════ */}
       <div
         className="relative h-screen overflow-hidden bg-black"
         onMouseEnter={() => setIsPaused(true)}
@@ -130,9 +127,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ════════════════════════════════════════ */}
       {/* BIENVENIDA */}
-      {/* ════════════════════════════════════════ */}
       <div className="relative max-w-7xl mx-auto px-6 py-28 text-center">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-brand-500 to-transparent"></div>
         <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ color: "#231F20" }}>
@@ -144,9 +139,7 @@ export default function Home() {
         </p>
       </div>
 
-      {/* ════════════════════════════════════════ */}
       {/* TRABAJOS */}
-      {/* ════════════════════════════════════════ */}
       <div className="py-28 bg-zinc-900">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -170,19 +163,19 @@ export default function Home() {
                   i % 2 === 1 ? "md:flex-row-reverse" : ""
                 }`}
               >
-                <div className="w-full md:w-5/12 lg:w-1/3 max-w-md">
+                <div className="w-full md:w-1/2 lg:w-2/5 max-w-md">
                   <div className="group relative rounded-2xl overflow-hidden border border-zinc-700/50 bg-zinc-800/40 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
                     <div className="p-2">
-                      <div className="rounded-lg overflow-hidden bg-black">
-                        <video
-                          src={src}
-                          muted
-                          loop
-                          autoPlay
-                          playsInline
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                      <video
+                        className="w-full h-auto rounded-lg"
+                        muted
+                        loop
+                        autoPlay
+                        playsInline
+                        preload="auto"
+                      >
+                        <source src={src} type="video/webm" />
+                      </video>
                     </div>
                     <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/5 pointer-events-none" />
                   </div>
@@ -201,9 +194,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ════════════════════════════════════════ */}
       {/* SERVICIOS DESTACADOS */}
-      {/* ════════════════════════════════════════ */}
       <div className="py-24" style={{ backgroundColor: "#e6f7ef" }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
@@ -264,9 +255,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ════════════════════════════════════════ */}
       {/* EXPLORA */}
-      {/* ════════════════════════════════════════ */}
       <div className="bg-gray-100 py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
@@ -302,9 +291,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ════════════════════════════════════════ */}
       {/* CTA FINAL */}
-      {/* ════════════════════════════════════════ */}
       <div className="relative py-28 text-center overflow-hidden" style={{ backgroundColor: "#231F20" }}>
         <div className="absolute inset-0 bg-[radial-gradient(at_50%_50%,#006837_0%,transparent_70%)] opacity-20"></div>
         <div className="absolute -top-20 -right-20 w-80 h-80 border border-white/5 rounded-full"></div>

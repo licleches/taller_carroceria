@@ -12,6 +12,7 @@ import AdminHome from "./pages/admin/AdminHome";
 import QuotesList from "./pages/admin/Dashboard";
 import QuoteDetail from "./pages/admin/QuoteDetail";
 import CalendarPage from "./pages/admin/CalendarPage";
+import LogViewer from "./pages/admin/LogViewer";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/admin/quotes" element={<AdminRoute><QuotesList /></AdminRoute>} />
           <Route path="/admin/quote/:id" element={<AdminRoute><QuoteDetail /></AdminRoute>} />
           <Route path="/admin/calendar" element={<AdminRoute><CalendarPage /></AdminRoute>} />
+          <Route path="/admin/logs" element={<AdminRoute><LogViewer /></AdminRoute>} />
           <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
           <Route path="*" element={
             <Layout>
