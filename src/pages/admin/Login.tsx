@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { detectAttack, detectBruteForce, resetBruteForce } from "../../lib/attackDetection";
+import { logEvent } from "../../lib/logger";
+import { getRequestMeta, getClientIP } from "../../lib/requestMeta";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -16,10 +19,29 @@ export default function AdminLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    const ip = await getClientIP();
+    const attackResult = detectAttack(email) || detectAttack(password);
+    if (attackResult.isAttack) {
+      const meta = getRequestMeta();
+      logEvent({ category: "ATTACK", severity: "WARNING", user: email, ip, method: "POST", resource: "/admin/login", statusCode: 400, message: `Intento de ataque bloqueado en login: ${attackResult.types.join(", ")}`, client: meta.client, userAgent: meta.userAgent, referer: meta.referer });
+      setError("Credenciales inválidas.");
+      return;
+    }
+
+    const bf = detectBruteForce(ip);
+    if (bf.blocked) {
+      const meta = getRequestMeta();
+      logEvent({ category: "ATTACK", severity: "WARNING", user: email, ip, method: "POST", resource: "/admin/login", statusCode: 429, message: "Bloqueado por fuerza bruta", client: meta.client, userAgent: meta.userAgent, referer: meta.referer });
+      setError("Demasiados intentos. Intenta de nuevo en 1 minuto.");
+      return;
+    }
+
     const err = await login(email, password);
     if (err) {
       setError(err);
     } else {
+      resetBruteForce(ip);
       navigate("/admin/dashboard", { replace: true });
     }
   };

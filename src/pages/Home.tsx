@@ -22,6 +22,15 @@ const workVideos = [
   "/images/video6.webm",
 ];
 
+const workVideosMeta = [
+  { title: "Reparación de Carrocería", desc: "Proceso de preparación y reparación de superficie para aplicación de pintura de alta calidad." },
+  { title: "Aplicación de Pintura", desc: "Aplicación profesional de pintura automotriz con acabado impecable y duradero." },
+  { title: "Reparación de Puertas", desc: "Reparación de puertas y alineación de paneles laterales en camioneta." },
+  { title: "Pintura en Costado", desc: "Aplicación de pintura en el costado del vehículo, restaurando su apariencia original." },
+  { title: "Repintado General", desc: "Repintado general completo de pickup rojo. Transformación total del acabado del vehículo." },
+  { title: "Repintado General", desc: "Resultado final del repintado general, mostrando un acabado impecable y profesional." },
+];
+
 export default function Home() {
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -181,11 +190,13 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="hidden md:flex flex-1 items-center">
-                  <div className="flex items-center gap-4">
-                    <div className="h-px w-12 bg-brand-500/30" />
-                    <span className="text-xs font-mono tracking-widest text-zinc-600">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
+                  <div>
+                    <div className="inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-widest uppercase mb-3 border"
+                         style={{ color: "#26b06b", borderColor: "rgba(38,176,107,0.3)", backgroundColor: "rgba(38,176,107,0.08)" }}>
+                      Trabajo {String(i + 1).padStart(2, "0")}
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2">{workVideosMeta[i].title}</h3>
+                    <p className="text-zinc-400 leading-relaxed max-w-md">{workVideosMeta[i].desc}</p>
                   </div>
                 </div>
               </div>
@@ -195,56 +206,33 @@ export default function Home() {
       </div>
 
       {/* SERVICIOS DESTACADOS */}
-      <div className="py-24" style={{ backgroundColor: "#e6f7ef" }}>
+      <div className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "#231F20" }}>
               Nuestros Servicios
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-500 max-w-2xl mx-auto">
               Desde reparaciones menores hasta repintados completos, tenemos todo lo que tu auto necesita.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
-              {
-                title: "Reparación de Carrocería",
-                desc: "Abolladuras, golpes, defensas, óxido y más. Recuperamos la forma original de tu auto.",
-                icon: Wrench,
-                color: "#d97706",
-                bg: "#fef3c7",
-              },
-              {
-                title: "Repintado General",
-                desc: "Pintura mate, perlada, tricapa o cambio de color completo. Acabados de exhibición.",
-                icon: Paintbrush,
-                color: "#006837",
-                bg: "#e6f7ef",
-              },
-              {
-                title: "Servicios Adicionales",
-                desc: "Restauración de faros, protección cerámica, texturizado de Pickup y detallado profesional.",
-                icon: Shield,
-                color: "#2563eb",
-                bg: "#dbeafe",
-              },
+              { title: "Reparación de Carrocería", desc: "Abolladuras, golpes, defensas, óxido y más. Recuperamos la forma original de tu auto.", icon: Wrench },
+              { title: "Repintado General", desc: "Pintura mate, perlada, tricapa o cambio de color completo. Acabados de exhibición.", icon: Paintbrush },
+              { title: "Servicios Adicionales", desc: "Restauración de faros, protección cerámica, texturizado de Pickup y detallado profesional.", icon: Shield },
             ].map((service, i) => (
               <div
                 key={i}
-                className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-transparent hover:border-brand-200"
+                className="group bg-gray-50 rounded-xl p-7 shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 hover:border-gray-200"
               >
-                <div
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110"
-                  style={{ backgroundColor: service.bg }}
-                >
-                  <service.icon size={32} style={{ color: service.color }} />
-                </div>
-                <h3 className="text-2xl font-bold mb-3" style={{ color: "#231F20" }}>{service.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{service.desc}</p>
+                <service.icon size={24} style={{ color: "#006837" }} className="mb-5" />
+                <h3 className="text-xl font-bold mb-2" style={{ color: "#231F20" }}>{service.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{service.desc}</p>
                 <Link
                   to="/servicios"
-                  className="inline-flex items-center gap-2 mt-6 text-sm font-semibold hover:gap-3 transition-all"
+                  className="inline-flex items-center gap-1.5 mt-5 text-sm font-medium hover:gap-2 transition-all"
                   style={{ color: "#006837" }}
                 >
                   Ver detalles →
@@ -256,16 +244,16 @@ export default function Home() {
       </div>
 
       {/* EXPLORA */}
-      <div className="bg-gray-100 py-24">
+      <div className="py-24" style={{ backgroundColor: "#f8faf9" }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "#231F20" }}>
               Explora Desert Jewel Bodyshop
             </h2>
-            <p className="text-gray-600 text-lg">Descubre todo lo que tenemos para ti</p>
+            <p className="text-gray-500">Descubre todo lo que tenemos para ti</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
               { to: "/nosotros", title: "Nosotros", desc: "Conoce nuestra historia", icon: Star },
               { to: "/servicios", title: "Servicios", desc: "Ver todos los servicios", icon: Paintbrush },
@@ -275,16 +263,11 @@ export default function Home() {
               <Link
                 key={i}
                 to={item.to}
-                className="group bg-white p-8 rounded-3xl shadow hover:shadow-xl transition-all hover:-translate-y-2 text-center border border-transparent hover:border-brand-300"
+                className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 hover:border-gray-200 text-center"
               >
-                <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform"
-                  style={{ backgroundColor: "#e6f7ef" }}
-                >
-                  <item.icon size={28} style={{ color: "#006837" }} />
-                </div>
-                <h3 className="font-bold text-lg mb-1" style={{ color: "#231F20" }}>{item.title}</h3>
-                <p className="text-gray-500 text-sm">{item.desc}</p>
+                <item.icon size={22} style={{ color: "#006837" }} className="mx-auto mb-3" />
+                <h3 className="font-bold text-base mb-0.5" style={{ color: "#231F20" }}>{item.title}</h3>
+                <p className="text-gray-400 text-xs">{item.desc}</p>
               </Link>
             ))}
           </div>

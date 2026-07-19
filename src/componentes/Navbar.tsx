@@ -17,7 +17,6 @@ export default function Navbar() {
               className="h-10 w-auto hidden sm:block"
             />
             <span className="text-white font-bold text-xl tracking-tight">
-              Desert Jewel<span className="text-brand-400"> Bodyshop</span>
             </span>
           </Link>
 

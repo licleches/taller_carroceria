@@ -1,1 +1,21 @@
+# ─── Bloquear Path Traversal ─────────────────────────
+# Secuencias ../
+/..*  /.netlify/block  404
+/%2e%2e*  /.netlify/block  404
+/%2e*  /.netlify/block  404
+/.\\..*  /.netlify/block  404
+/%c0%ae*  /.netlify/block  404
+/%252e*  /.netlify/block  404
+/%c0%ae%c0%ae*  /.netlify/block  404
+
+# ─── Bloquear intentos de acceso a archivos sensibles ─
+/etc/passwd*  /.netlify/block  404
+/.env*  /.netlify/block  404
+/git/config*  /.netlify/block  404
+/wp-admin*  /.netlify/block  404
+/administrator*  /.netlify/block  404
+/.git*  /.netlify/block  404
+/.svn*  /.netlify/block  404
+
+# ─── SPA catch-all ────────────────────────────────
 /*    /index.html   200

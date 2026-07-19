@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Clock, Phone } from "lucide-react";
+import { Clock, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -29,10 +29,7 @@ export default function Footer() {
         <div>
           <h3 className="text-white font-semibold mb-4">Contacto</h3>
           <div className="flex flex-col gap-3 text-sm">
-            <div className="flex items-start gap-2">
-              <MapPin size={16} className="mt-0.5 shrink-0 text-brand-400" />
-              <span>Cjon Zaragoza y 27, Colonia Burócrata</span>
-            </div>
+ 
             <div className="flex items-center gap-2">
               <Clock size={16} className="shrink-0 text-brand-400" />
               <span>Lun-Vie 10:00-18:00 / Sáb 9:00-14:00</span>

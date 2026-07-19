@@ -1,6 +1,10 @@
 import { Breadcrumbs } from "../componentes/Breadcrumb";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import { detectAttack } from "../lib/attackDetection";
+import { detectFlood } from "../lib/attackDetection";
+import { logEvent } from "../lib/logger";
+import { getRequestMeta, getClientIP } from "../lib/requestMeta";
 
 const LIMITS = { nombre: 50, telefono: 12, email: 100, placas: 8, notas: 250 };
 
@@ -27,6 +31,16 @@ const horariosDisponibles = [
   "13:00", "14:00", "15:00", "16:00", "17:00",
 ];
 
+// Usa la fecha LOCAL del usuario (año, mes, día) en vez de toISOString(),
+// que convierte a UTC y puede adelantar/atrasar el día según la zona horaria.
+const todayStr = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 export default function Agendar() {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -42,11 +56,71 @@ export default function Agendar() {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const [checkingSlot, setCheckingSlot] = useState(false);
+  const [occupiedHours, setOccupiedHours] = useState<string[]>([]);
+
+  const validateInputs = (): string | null => {
+    const fields = [
+      { name: "nombre", value: formData.nombre },
+      { name: "telefono", value: formData.telefono },
+      { name: "email", value: formData.email },
+      { name: "placas", value: formData.placas },
+      { name: "notas", value: formData.notas },
+    ];
+    for (const f of fields) {
+      if (f.value) {
+        const result = detectAttack(f.value);
+        if (result.isAttack) {
+          return "Datos inválidos detectados. Por favor verifica tu información.";
+        }
+      }
+    }
+    return null;
+  };
+
+  const checkSlotAvailable = useCallback(async (fecha: string, hora: string): Promise<boolean> => {
+    setCheckingSlot(true);
+    const { data } = await supabase
+      .from("appointments")
+      .select("id")
+      .eq("fecha", fecha)
+      .eq("hora", hora)
+      .maybeSingle();
+    setCheckingSlot(false);
+    return !data;
+  }, []);
+
+  useEffect(() => {
+    if (!formData.fecha) {
+      setOccupiedHours([]);
+      return;
+    }
+    supabase
+      .from("appointments")
+      .select("hora")
+      .eq("fecha", formData.fecha)
+      .then(({ data }) => {
+        if (data) setOccupiedHours(data.map((a) => a.hora));
+      });
+  }, [formData.fecha]);
+
+  const horasDisponibles = horariosDisponibles.filter((slot) => {
+    if (occupiedHours.includes(slot)) return false;
+    if (formData.fecha === todayStr()) {
+      const now = new Date();
+      const currentMin = now.getHours() * 60 + now.getMinutes();
+      const [sh, sm] = slot.split(":").map(Number);
+      if (sh * 60 + sm <= currentMin) return false;
+    }
+    return true;
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    if (detectAttack(value).isAttack) return;
 
     if (name === "telefono") {
       const digitsOnly = value.replace(/\D/g, "").slice(0, LIMITS.telefono);
@@ -64,8 +138,47 @@ export default function Agendar() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSending(true);
     setError("");
+
+    const ip = await getClientIP();
+    if (detectFlood(ip).blocked) {
+      setError("Demasiadas solicitudes. Espera un momento e intenta de nuevo.");
+      return;
+    }
+
+    const attackError = validateInputs();
+    if (attackError) {
+      const meta = getRequestMeta();
+      logEvent({ category: "ATTACK", severity: "WARNING", user: formData.nombre, ip, method: "POST", resource: "/agendar", statusCode: 400, message: "Intento de ataque bloqueado en formulario de citas", client: meta.client, userAgent: meta.userAgent, referer: meta.referer });
+      setError(attackError);
+      return;
+    }
+
+    if (formData.fecha < todayStr()) {
+      setError("No puedes agendar una cita en el pasado. Selecciona una fecha a partir de hoy.");
+      return;
+    }
+
+    if (formData.fecha === todayStr()) {
+      const now = new Date();
+      const currentMin = now.getHours() * 60 + now.getMinutes();
+      const [sh, sm] = formData.hora.split(":").map(Number);
+      if (sh * 60 + sm <= currentMin) {
+        setError("La hora seleccionada ya pasó. Elige otra hora.");
+        return;
+      }
+    }
+
+    const available = await checkSlotAvailable(formData.fecha, formData.hora);
+    if (!available) {
+      setError("Este horario ya está reservado. Por favor selecciona otra hora.");
+      return;
+    }
+
+    setSending(true);
+
+    const meta = getRequestMeta();
+    const logPayload = { user: formData.nombre, ip, method: "POST" as const, resource: "/agendar" as const, statusCode: 200, client: meta.client, userAgent: meta.userAgent, referer: meta.referer };
 
     const { error: insertError } = await supabase.from("appointments").insert({
       nombre: formData.nombre,
@@ -81,11 +194,12 @@ export default function Agendar() {
     setSending(false);
 
     if (insertError) {
-      console.error("Error al agendar cita:", insertError);
+      logEvent({ category: "ERROR", severity: "ERROR", ...logPayload, statusCode: 500, message: `Error al agendar cita: ${insertError.message}` });
       setError("Ocurrió un error al agendar tu cita. Intenta de nuevo.");
       return;
     }
 
+    logEvent({ category: "VISIT", severity: "INFO", ...logPayload, message: "Cita agendada exitosamente" });
     setSubmitted(true);
   };
 
@@ -222,6 +336,7 @@ export default function Agendar() {
                   required
                   value={formData.fecha}
                   onChange={handleChange}
+                  min={todayStr()}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-brand-500"
                 />
               </div>
@@ -235,11 +350,15 @@ export default function Agendar() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-brand-500"
                 >
                   <option value="">Selecciona una hora</option>
-                  {horariosDisponibles.map((hora, i) => (
-                    <option key={i} value={hora}>
-                      {hora} hrs
-                    </option>
-                  ))}
+                  {horasDisponibles.length === 0 ? (
+                    <option value="" disabled>No hay horarios disponibles</option>
+                  ) : (
+                    horasDisponibles.map((hora, i) => (
+                      <option key={i} value={hora}>
+                        {hora} hrs
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
             </div>
@@ -278,10 +397,10 @@ export default function Agendar() {
 
             <button
               type="submit"
-              disabled={sending}
+              disabled={sending || checkingSlot}
               className="w-full py-5 bg-gradient-to-r from-brand-600 to-brand-500 text-white font-semibold text-xl rounded-2xl hover:scale-105 transition-all duration-300 shadow-lg disabled:opacity-50"
             >
-              {sending ? "Agendando..." : "Confirmar Cita"}
+              {checkingSlot ? "Verificando disponibilidad..." : sending ? "Agendando..." : "Confirmar Cita"}
             </button>
           </form>
         )}

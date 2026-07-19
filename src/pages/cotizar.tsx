@@ -1,6 +1,10 @@
 import { Breadcrumbs } from "../componentes/Breadcrumb";
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
+import { detectAttack } from "../lib/attackDetection";
+import { detectFlood } from "../lib/attackDetection";
+import { logEvent } from "../lib/logger";
+import { getRequestMeta, getClientIP } from "../lib/requestMeta";
 
 const MARCAS_POPULARES = [
   "Acura", "Audi", "BMW", "Buick", "Cadillac", "Chevrolet", "Chrysler",
@@ -129,10 +133,43 @@ export default function Cotizar() {
     setFiles(files.filter((_, i) => i !== index));
   };
 
+  const validateInputs = (): string | null => {
+    const fields = [
+      { name: "nombre", value: formData.nombre },
+      { name: "telefono", value: formData.telefono },
+      { name: "email", value: formData.email },
+      { name: "descripcion", value: formData.descripcion },
+    ];
+    for (const f of fields) {
+      if (f.value) {
+        const result = detectAttack(f.value);
+        if (result.isAttack) {
+          return "Datos inválidos detectados. Por favor verifica tu información.";
+        }
+      }
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSending(true);
     setError("");
+
+    const ip = await getClientIP();
+    if (detectFlood(ip).blocked) {
+      setError("Demasiadas solicitudes. Espera un momento e intenta de nuevo.");
+      return;
+    }
+
+    const attackError = validateInputs();
+    if (attackError) {
+      const meta = getRequestMeta();
+      logEvent({ category: "ATTACK", severity: "WARNING", user: formData.nombre, ip, method: "POST", resource: "/cotizar", statusCode: 400, message: "Intento de ataque bloqueado en formulario de cotización", client: meta.client, userAgent: meta.userAgent, referer: meta.referer });
+      setError(attackError);
+      return;
+    }
+
+    setSending(true);
 
     const foto_urls: string[] = [];
 
@@ -177,7 +214,8 @@ export default function Cotizar() {
     setSending(false);
 
     if (insertError) {
-      console.error("Error al insertar cotización:", insertError);
+      const meta = getRequestMeta();
+      logEvent({ category: "ERROR", severity: "ERROR", user: formData.nombre, ip, method: "POST", resource: "/cotizar", statusCode: 500, message: `Error al insertar cotización: ${insertError.message}`, client: meta.client, userAgent: meta.userAgent, referer: meta.referer });
       const msg =
         insertError.message?.includes("duplicate key") ||
         insertError.message?.includes("violates row-level security")
@@ -187,6 +225,8 @@ export default function Cotizar() {
       return;
     }
 
+    const meta = getRequestMeta();
+    logEvent({ category: "VISIT", severity: "INFO", user: formData.nombre, ip, method: "POST", resource: "/cotizar", statusCode: 200, message: "Cotización enviada exitosamente", client: meta.client, userAgent: meta.userAgent, referer: meta.referer });
     setSubmitted(true);
   };
 
